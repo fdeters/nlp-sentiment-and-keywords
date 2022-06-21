@@ -63,7 +63,7 @@ def add_keywords(dataframe: pd.DataFrame,
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(INPUT_FILEPATH)
+    df = pd.read_csv(INPUT_FILEPATH)  # change this to .read_excel() or .read_csv as needed
 
     # SET THESE
     column_to_analyze = 'Summary'
@@ -73,4 +73,4 @@ if __name__ == '__main__':
     df = add_sentiment(df, column_to_analyze)
     df = add_keywords(df, column_to_analyze, num_keywords_desired)
 
-    df.to_excel(OUTPUT_FILEPATH)
+    df.to_excel(OUTPUT_FILEPATH)  # change this to .to_excel() or .to_csv() as needed
