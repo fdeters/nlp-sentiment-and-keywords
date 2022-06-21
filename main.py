@@ -7,7 +7,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import yake
 
 INPUT_FILEPATH = './data/sightings_with-coords.csv'
-OUTPUT_FILEPATH = './data/sightings_with-coords-keywords.xlsx'
+OUTPUT_FILEPATH = './data/sightings_with-coords-keywords.csv'
 
 
 def add_sentiment(dataframe: pd.DataFrame,
@@ -20,6 +20,7 @@ def add_sentiment(dataframe: pd.DataFrame,
     """
     sid = SentimentIntensityAnalyzer()
 
+    print('Performing sentiment analysis...')
     scores = dataframe[text_column].apply(
         lambda x: pd.Series(sid.polarity_scores(str(x)))
     )
@@ -31,6 +32,7 @@ def add_sentiment(dataframe: pd.DataFrame,
         'compound': 'sentiment_compound'
     })
 
+    print('... sentiment analysis completed.')
     return pd.concat([dataframe, scores], axis=1)
 
 
@@ -47,6 +49,7 @@ def add_keywords(dataframe: pd.DataFrame,
     kw_extractor = yake.KeywordExtractor(lan='en', n=2, dedupLim=0.1,
                                          top=num_keywords)
 
+    print('Performing keyword analysis...')
     # creates an n-column df with the keywords; excludes yake's h-value
     keywords = dataframe[text_column].apply(
         lambda x: pd.Series(
@@ -59,11 +62,14 @@ def add_keywords(dataframe: pd.DataFrame,
 
     keywords.rename(axis=1, inplace=True, mapper=column_name_mapper)
 
+    print('... keyword analysis completed.')
     return pd.concat([dataframe, keywords], axis=1)
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(INPUT_FILEPATH)  # change this to .read_excel() or .read_csv as needed
+    # change this to .read_excel() or .read_csv as needed
+    print('Reading input data...')
+    df = pd.read_csv(INPUT_FILEPATH, encoding='utf-8')
 
     # SET THESE
     column_to_analyze = 'Summary'
@@ -73,4 +79,6 @@ if __name__ == '__main__':
     df = add_sentiment(df, column_to_analyze)
     df = add_keywords(df, column_to_analyze, num_keywords_desired)
 
-    df.to_excel(OUTPUT_FILEPATH)  # change this to .to_excel() or .to_csv() as needed
+    # change this to .to_excel() or .to_csv() as needed
+    print('Writing output data...')
+    df.to_csv(OUTPUT_FILEPATH, encoding='utf-16', index=False)
